@@ -1,0 +1,9 @@
+bin/
+obj/
+.vs/
+*.user
+.idea/
+*.suo
+*.userprefs
+.DS_Store
+wwwroot/sample-data
