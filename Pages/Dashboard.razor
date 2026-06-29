@@ -1,0 +1,63 @@
+@page "/dashboard"
+@using FitCoach3.Models
+@using FitCoach3.Services
+@inject AppState AppState
+
+<h1>Dashboard</h1>
+
+@if (!AppState.CompletedSessions.Any())
+{
+    <section>
+        <h2>Ingen träning loggad ännu</h2>
+        <p style="color: var(--text-secondary)">Gå till Träning och avsluta ett pass för att se statistik här.</p>
+    </section>
+}
+else
+{
+    <section>
+        <h2>Översikt</h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <span class="stat-value">@AppState.CompletedSessions.Count</span>
+                <span class="stat-label">Pass totalt</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">@AppState.CompletedSessions.Count(s => s.SessionName == "Push")</span>
+                <span class="stat-label">Push-pass</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">@AppState.CompletedSessions.Count(s => s.SessionName == "Pull")</span>
+                <span class="stat-label">Pull-pass</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-value">@AppState.CompletedSessions.Count(s => s.SessionName == "Legs")</span>
+                <span class="stat-label">Leg-pass</span>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <h2>Senaste passen</h2>
+        @foreach (var session in AppState.CompletedSessions.AsEnumerable().Reverse())
+        {
+            <div class="session-card">
+                <h3>@session.SessionName</h3>
+                <p style="color: var(--text-secondary); font-size: 0.85rem;">
+                    @session.CompletedAt?.ToString("dd MMM yyyy, HH:mm")
+                </p>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    protected override void OnInitialized()
+    {
+        AppState.OnChange += StateHasChanged;
+    }
+
+    public void Dispose()
+    {
+        AppState.OnChange -= StateHasChanged;
+    }
+}

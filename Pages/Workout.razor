@@ -1,0 +1,111 @@
+@page "/workout"
+@using FitCoach3.Models
+@using FitCoach3.Models.Enums
+@using FitCoach3.Services
+@using FitCoach3.Services.Interfaces
+@inject IWorkoutService WorkoutService
+@inject AppState AppState
+@inject IStorageService StorageService
+@inject NavigationManager Navigation
+
+<h1>Dagens pass</h1>
+
+@if (activeSession == null)
+{
+    <section>
+        <h2>Välj pass</h2>
+        <div class="session-buttons">
+            @foreach (var session in sessions)
+            {
+                <button @onclick="() => StartSession(session)">
+                    @session.SessionName
+                </button>
+            }
+        </div>
+    </section>
+}
+else
+{
+    <section>
+        <h2>@activeSession.SessionName</h2>
+
+        @foreach (var exercise in activeSession.Exercises)
+        {
+            <div class="session-card">
+                <h3>@exercise.Name</h3>
+                <p class="exercise-info">@exercise.Sets set × @exercise.Reps</p>
+
+                <div class="sets-grid">
+                    @for (int i = 0; i < exercise.Sets; i++)
+                    {
+                        int setIndex = i;
+                        <div class="set-row">
+                            <span class="set-label">Set @(setIndex + 1)</span>
+                            <input type="number"
+                                   placeholder="kg"
+                                   min="0"
+                                   step="0.5"
+                                   @bind="weights[exercise.Name][setIndex]"
+                                   @oninput="e => ClampValue(e, exercise.Name, setIndex)" />
+                            <span class="set-unit">kg</span>
+                        </div>
+                    }
+                </div>
+            </div>
+        }
+
+        <button @onclick="FinishSession">Avsluta pass</button>
+
+        @if (finished)
+        {
+            <p class="recommendation-text">Pass avslutat!</p>
+        }
+    </section>
+}
+
+@code {
+    private List<WorkoutSession> sessions = new();
+    private WorkoutSession? activeSession;
+    private Dictionary<string, double[]> weights = new();
+    private bool finished = false;
+    
+
+    protected override void OnParametersSet()
+    {
+        var plan = WorkoutService.GeneratePlan(AppState.UserProfile);
+        sessions = plan.Sessions;
+    }
+
+    private void StartSession(WorkoutSession session)
+    {
+        activeSession = session;
+        finished = false;
+        weights = new();
+
+        foreach (var exercise in session.Exercises)
+        {
+            weights[exercise.Name] = new double[exercise.Sets];
+        }
+    }
+
+    private async Task FinishSession()
+    {
+        activeSession!.IsCompleted = true;
+        activeSession.CompletedAt = DateTime.Now;
+        AppState.AddCompletedSession(activeSession);
+        await StorageService.SaveWorkoutSessionAsync(activeSession);
+        activeSession = null;
+        finished = true;
+        weights = new Dictionary<string, double[]>();
+        Navigation.NavigateTo("/");
+    }
+
+    private void ClampValue(ChangeEventArgs e, string exerciseName, int setIndex)
+    {
+        if (double.TryParse(e.Value?.ToString(), out double val))
+        {
+            if (val < 0) weights[exerciseName][setIndex] = 0;
+        }
+    }
+    
+}

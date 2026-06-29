@@ -1,0 +1,56 @@
+﻿@page "/"
+@using FitCoach3.Models
+@using FitCoach3.Services
+@using FitCoach3.Services.Interfaces
+@inject AppState AppState
+@inject IRecommendationService RecommendationService
+@inject NavigationManager Navigation
+
+<h1>@Greeting</h1>
+
+<section>
+    <h2>Veckostatus</h2>
+    <div class="stats-grid">
+        <div class="stat-card">
+            <span class="stat-value">@WeekSessions</span>
+            <span class="stat-label">Pass denna vecka</span>
+        </div>
+        <div class="stat-card">
+            <span class="stat-value">@AppState.CompletedSessions.Count</span>
+            <span class="stat-label">Pass totalt</span>
+        </div>
+    </div>
+</section>
+
+<section>
+    <h2>Rekommendation</h2>
+    <p class="recommendation-text">@Recommendation</p>
+</section>
+
+<section>
+    <h2>Snabbval</h2>
+    <div class="session-buttons">
+        <button @onclick='() => Navigation.NavigateTo("/workout")'>
+            💪 Starta träning
+        </button>
+        <button @onclick='() => Navigation.NavigateTo("/dashboard")'>
+            📊 Se statistik
+        </button>
+        <button @onclick='() => Navigation.NavigateTo("/profile")'>
+            👤 Min profil
+        </button>
+    </div>
+</section>
+
+@code {
+    private string Greeting => string.IsNullOrEmpty(AppState.UserProfile.Name)
+        ? "Välkommen till FitCoach!"
+        : $"Hej {AppState.UserProfile.Name}! 👋";
+
+    private int WeekSessions => AppState.CompletedSessions
+        .Count(s => s.CompletedAt.HasValue &&
+                    s.CompletedAt.Value >= DateTime.Now.AddDays(-7));
+
+    private string Recommendation =>
+        RecommendationService.GetRecommendationMessage(AppState.CompletedSessions);
+}

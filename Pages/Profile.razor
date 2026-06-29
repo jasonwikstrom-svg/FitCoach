@@ -1,0 +1,91 @@
+@page "/profile"
+@using FitCoach3.Models
+@using FitCoach3.Services
+@using FitCoach3.Models.Enums
+@inject AppState AppState
+
+<h1>Min profil</h1>
+
+<section>
+    <h2>Personuppgifter</h2>
+
+    <label>Namn</label>
+    <input type="text" @bind="profile.Name" placeholder="Ditt namn" />
+
+    <label>Ålder</label>
+    <input type="number"
+           value="@(profile.Age == 0 ? "" : profile.Age.ToString())"
+           placeholder="Ålder"
+           @onchange="e => profile.Age = int.TryParse(e.Value?.ToString(), out var v) ? v : 0" />
+    
+    <label>Träningsmål</label>
+    <select @bind="profile.Goal">
+        <option value="@Goal.BuildMuscle">Bygga muskler</option>
+        <option value="@Goal.LoseWeight">Gå ner i vikt</option>
+        <option value="@Goal.Cardio">Kondition</option>
+    </select>
+
+    <label>Träningsplats</label>
+    <select @bind="profile.Location">
+        <option value="@TrainingLocation.Gym">Gym</option>
+        <option value="@TrainingLocation.Home">Hemma</option>
+    </select>
+
+    <label>Antal dagar per vecka: @profile.DaysPerWeek</label>
+    <input type="range" min="2" max="5" @bind="profile.DaysPerWeek" />
+
+    <label>Vikt (kg)</label>
+    <input type="number"
+           value="@(profile.Weight == 0 ? "" : profile.Weight.ToString())"
+           placeholder="Vikt (kg)"
+           @onchange="e => profile.Weight = double.TryParse(e.Value?.ToString(), out var v) ? v : 0" />
+
+    <label>Längd (cm)</label>
+    <input type="number" 
+           value="@(profile.Height == 0 ? "" : profile.Height.ToString())" 
+           placeholder="Längd (cm)"
+           @onchange="e => profile.Height = double.TryParse(e.Value?.ToString(), out var v) ? v : 0" />
+    
+    <label>Träningstid: @profile.SessionDurationMinutes min</label>
+    <input type="range" min="30" max="120" step="15" @bind="profile.SessionDurationMinutes" />
+    
+    @if (Bmi > 0)
+    {
+        <div class="bmi-card">
+            <span class="bmi-label">BMI</span>
+            <span class="bmi-value">@Bmi.ToString("F1")</span>
+            <span class="bmi-category">@BmiCategory()</span>
+        </div>
+    }
+
+    <button @onclick="SaveProfile">Spara profil</button>
+
+    @if (saved)
+    {
+        <p class="recommendation-text">Profil sparad!</p>
+    }
+</section>
+
+@code {
+    private UserProfile profile => AppState.UserProfile;
+    private bool saved = false;
+
+    private double Bmi => profile.Weight > 0 && profile.Height > 0
+        ? profile.Weight / Math.Pow(profile.Height / 100.0, 2)
+        : 0;
+
+    private string BmiCategory()
+    {
+        if (Bmi < 18.5) return "Undervikt";
+        if (Bmi < 25) return "Normalvikt";
+        if (Bmi < 30) return "Overvikt";
+        return "Fetma";
+    }
+
+    private void SaveProfile()
+    {
+        saved = true;
+        StateHasChanged();
+    }
+
+}
