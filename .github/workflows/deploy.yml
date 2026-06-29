@@ -25,6 +25,9 @@ jobs:
       - name: Change base tag
         run: sed -i 's/<base href="\/" \/>/<base href="\/FitCoach\/" \/>/g' release/wwwroot/index.html
 
+      - name: Copy index.html to 404.html
+        run: cp release/wwwroot/index.html release/wwwroot/404.html
+
       - name: Deploy
         uses: JamesIves/github-pages-deploy-action@v4
         with:
