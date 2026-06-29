@@ -7,3 +7,9 @@ obj/
 *.userprefs
 .DS_Store
 wwwroot/sample-data
+weather.json
+
+# Secrets
+appsettings.Development.json
+*.env
+secrets.json
