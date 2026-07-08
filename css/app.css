@@ -365,3 +365,9 @@ input[type="number"]:focus {
         max-width: 100%;
     }
 }
+
+.navbar-toggler-text {
+    color: var(--text-primary);
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
