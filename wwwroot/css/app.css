@@ -331,3 +331,37 @@ input[type="number"]:focus {
     font-size: 0.85rem;
     color: var(--text-secondary);
 }
+
+@media (max-width: 768px) {
+    .page {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+    }
+
+    main {
+        padding: 1rem;
+    }
+
+    .content {
+        max-width: 100%;
+    }
+
+    button {
+        width: 100%;
+        padding: 0.8rem;
+    }
+
+    select, input[type="text"], input[type="number"] {
+        max-width: 100%;
+    }
+
+    input[type="range"] {
+        max-width: 100%;
+    }
+}
