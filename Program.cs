@@ -24,6 +24,7 @@ public class Program
         builder.Services.AddSingleton<IWorkoutService, WorkoutService>();
         builder.Services.AddSingleton<IRecommendationService, RecommendationService>();
         builder.Services.AddScoped<IStorageService, StorageService>();
+        builder.Services.AddScoped<Services.AiCoachService>();
 
         await builder.Build().RunAsync();
     }
