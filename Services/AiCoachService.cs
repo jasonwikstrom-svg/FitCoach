@@ -59,7 +59,16 @@ Antalet sessioner i listan ska matcha {profile.DaysPerWeek} dagar per vecka.";
 // TILLFÄLLIG DEBUG-LOGG
         Console.WriteLine("RAW AI RESPONSE: " + json.GetRawText());
 
-        var text = json.GetProperty("content")[0].GetProperty("text").GetString() ?? "";
+        var contentArray = json.GetProperty("content");
+        string text = "";
+        foreach (var block in contentArray.EnumerateArray())
+        {
+            if (block.GetProperty("type").GetString() == "text")
+            {
+                text = block.GetProperty("text").GetString() ?? "";
+                break;
+            }
+        }
 
         var cleaned = text.Trim();
         if (cleaned.StartsWith("```"))
