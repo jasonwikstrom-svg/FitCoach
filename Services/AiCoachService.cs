@@ -55,6 +55,10 @@ Antalet sessioner i listan ska matcha {profile.DaysPerWeek} dagar per vecka.";
         response.EnsureSuccessStatusCode();
 
         var json = await response.Content.ReadFromJsonAsync<JsonElement>();
+
+// TILLFÄLLIG DEBUG-LOGG
+        Console.WriteLine("RAW AI RESPONSE: " + json.GetRawText());
+
         var text = json.GetProperty("content")[0].GetProperty("text").GetString() ?? "";
 
         var cleaned = text.Trim();
