@@ -8,4 +8,6 @@ public interface IStorageService
     Task<UserProfile?> LoadUserProfileAsync();
     Task SaveWorkoutSessionAsync(WorkoutSession session);
     Task<List<WorkoutSession>> LoadWorkoutHistoryAsync();
+    Task SaveWorkoutPlanAsync(WorkoutPlan plan);
+    Task<WorkoutPlan?> LoadWorkoutPlanAsync();
 }

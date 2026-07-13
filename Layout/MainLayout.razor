@@ -1,4 +1,7 @@
 ﻿@inherits LayoutComponentBase
+@inject FitCoach3.Services.AppState AppState
+@inject FitCoach3.Services.Interfaces.IStorageService StorageService
+
 <div class="page">
     <div class="sidebar">
         <NavMenu/>
@@ -10,3 +13,14 @@
         </article>
     </main>
 </div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        var savedPlan = await StorageService.LoadWorkoutPlanAsync();
+        if (savedPlan != null)
+        {
+            AppState.CurrentPlan = savedPlan;
+        }
+    }
+}

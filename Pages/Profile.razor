@@ -2,7 +2,11 @@
 @using FitCoach3.Models
 @using FitCoach3.Services
 @using FitCoach3.Models.Enums
+@using FitCoach3.Services.Interfaces
 @inject AppState AppState
+@inject AiCoachService AiCoachService
+@inject IStorageService StorageService
+@inject NavigationManager Navigation
 
 <h1>Min profil</h1>
 
@@ -59,6 +63,15 @@
     }
 
     <button @onclick="SaveProfile">Spara profil</button>
+    
+    <button @onclick="GenerateSchedule" disabled="@isGenerating">
+        @(isGenerating ? "Genererar schema..." : "Generera träningsschema med AI")
+    </button>
+
+    @if (generateError != null)
+    {
+        <p class="error-text">@generateError</p>
+    }
 
     @if (saved)
     {
@@ -86,6 +99,31 @@
     {
         saved = true;
         StateHasChanged();
+    }
+    
+    private bool isGenerating = false;
+    private string? generateError;
+
+    private async Task GenerateSchedule()
+    {
+        isGenerating = true;
+        generateError = null;
+
+        try
+        {
+            var plan = await AiCoachService.GenerateWorkoutPlanAsync(profile);
+            AppState.SetCurrentPlan(plan);
+            await StorageService.SaveWorkoutPlanAsync(plan);
+            Navigation.NavigateTo("/workout");
+        }
+        catch (Exception ex)
+        {
+            generateError = "Kunde inte generera schema: " + ex.Message;
+        }
+        finally
+        {
+            isGenerating = false;
+        }
     }
 
 }

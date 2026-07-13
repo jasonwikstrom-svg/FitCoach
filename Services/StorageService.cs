@@ -39,4 +39,16 @@ public class StorageService : IStorageService
         var json = await _js.InvokeAsync<string?>("localStorage.getItem", "workoutHistory");
         return json == null ? new List<WorkoutSession>() : JsonSerializer.Deserialize<List<WorkoutSession>>(json) ?? new();
     }
+    
+    public async Task SaveWorkoutPlanAsync(WorkoutPlan plan)
+    {
+        var json = JsonSerializer.Serialize(plan);
+        await _js.InvokeVoidAsync("localStorage.setItem", "currentPlan", json);
+    }
+
+    public async Task<WorkoutPlan?> LoadWorkoutPlanAsync()
+    {
+        var json = await _js.InvokeAsync<string?>("localStorage.getItem", "currentPlan");
+        return json == null ? null : JsonSerializer.Deserialize<WorkoutPlan>(json);
+    }
 }

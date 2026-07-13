@@ -72,8 +72,15 @@ else
 
     protected override void OnParametersSet()
     {
-        var plan = WorkoutService.GeneratePlan(AppState.UserProfile);
-        sessions = plan.Sessions;
+        if (AppState.CurrentPlan != null)
+        {
+            sessions = AppState.CurrentPlan.Sessions;
+        }
+        else
+        {
+            var plan = WorkoutService.GeneratePlan(AppState.UserProfile);
+            sessions = plan.Sessions;
+        }
     }
 
     private void StartSession(WorkoutSession session)
