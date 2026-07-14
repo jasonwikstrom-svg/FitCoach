@@ -3,6 +3,7 @@
 @using FitCoach3.Models.Enums
 @using FitCoach3.Services
 @using FitCoach3.Services.Interfaces
+@implements IDisposable
 @inject IWorkoutService WorkoutService
 @inject AppState AppState
 @inject IStorageService StorageService
@@ -48,6 +49,16 @@ else
                                    @bind="weights[exercise.Name][setIndex]"
                                    @oninput="e => ClampValue(e, exercise.Name, setIndex)" />
                             <span class="set-unit">kg</span>
+
+                            @if (restingKey == $"{exercise.Name}-{setIndex}")
+                            {
+                                <span class="rest-timer">Vila: @restSecondsLeft s</span>
+                                <button @onclick="SkipRest">Hoppa över</button>
+                            }
+                            else
+                            {
+                                <button @onclick="() => StartRest(exercise.Name, setIndex, exercise.RestSeconds)">Klart</button>
+                            }
                         </div>
                     }
                 </div>
@@ -68,6 +79,42 @@ else
     private WorkoutSession? activeSession;
     private Dictionary<string, double[]> weights = new();
     private bool finished = false;
+    private string? restingKey;
+    private int restSecondsLeft;
+    private System.Threading.Timer? restTimer;
+
+    private void StartRest(string exerciseName, int setIndex, int restSeconds)
+    {
+        restingKey = $"{exerciseName}-{setIndex}";
+        restSecondsLeft = restSeconds > 0 ? restSeconds : 60;
+
+        restTimer?.Dispose();
+        restTimer = new System.Threading.Timer(_ =>
+        {
+            InvokeAsync(() =>
+            {
+                restSecondsLeft--;
+                if (restSecondsLeft <= 0)
+                {
+                    SkipRest();
+                }
+                StateHasChanged();
+            });
+        }, null, 1000, 1000);
+    }
+
+    private void SkipRest()
+    {
+        restTimer?.Dispose();
+        restTimer = null;
+        restingKey = null;
+        StateHasChanged();
+    }
+
+    public void Dispose()
+    {
+        restTimer?.Dispose();
+    }
     
 
     protected override void OnParametersSet()

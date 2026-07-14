@@ -371,3 +371,25 @@ input[type="number"]:focus {
     font-size: 0.9rem;
     margin-left: 0.5rem;
 }
+
+.rest-timer {
+    font-weight: 600;
+    color: #a78bfa; /* matchar din lila FitCoach-färg */
+    padding: 4px 10px;
+    background: rgba(167, 139, 250, 0.15);
+    border-radius: 6px;
+    margin-left: 8px;
+}
+
+.set-row button {
+    margin-left: 8px;
+    padding: 4px 12px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.set-row button:hover {
+    opacity: 0.85;
+}
