@@ -114,7 +114,7 @@
             var plan = await AiCoachService.GenerateWorkoutPlanAsync(profile);
             AppState.SetCurrentPlan(plan);
             await StorageService.SaveWorkoutPlanAsync(plan);
-            Navigation.NavigateTo("/workout");
+            Navigation.NavigateTo("workout");
         }
         catch (Exception ex)
         {
