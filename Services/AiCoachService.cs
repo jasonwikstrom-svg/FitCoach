@@ -42,11 +42,12 @@ Svara ENDAST med giltig JSON, exakt i detta format, utan markdown-kodblock eller
     {{
       ""sessionName"": ""t.ex. Push Day"",
       ""exercises"": [
-        {{ ""name"": ""övningsnamn"", ""sets"": 4, ""reps"": ""8-10"" }}
+        {{{{ """"name"""": """"övningsnamn"""", """"sets"""": 4, """"reps"""": """"8-10"""", """"restSeconds"""": 90 }}}}
       ]
     }}
   ]
 }}
+Ange en lämplig vilotid i sekunder (restSeconds) per övning baserat på intensitet: tunga sammansatta lyft som knäböj/marklyft/bänkpress 90-180 sekunder, isolationsövningar 45-60 sekunder, konditionsintervaller 30-60 sekunder.
 
 Antalet sessioner i listan ska matcha {profile.DaysPerWeek} dagar per vecka.";
 
@@ -97,7 +98,8 @@ Antalet sessioner i listan ska matcha {profile.DaysPerWeek} dagar per vecka.";
                 {
                     Name = e.Name,
                     Sets = e.Sets,
-                    Reps = e.Reps
+                    Reps = e.Reps,
+                    RestSeconds = e.RestSeconds
                 }).ToList()
             }).ToList()
         };
@@ -136,5 +138,8 @@ Antalet sessioner i listan ska matcha {profile.DaysPerWeek} dagar per vecka.";
 
         [JsonPropertyName("reps")]
         public string Reps { get; set; } = string.Empty;
+        
+        [JsonPropertyName("restSeconds")]
+        public int RestSeconds { get; set; }
     }
 }
